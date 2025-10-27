@@ -18,6 +18,7 @@ class ProductData extends Model
     protected $fillable = [
         'file_upload_id',
         'unique_key',
+        'csv_occurrence_count',
         'product_title',
         'product_description',
         'style_number',
@@ -33,6 +34,7 @@ class ProductData extends Model
      * @var array<string, string>
      */
     protected $casts = [
+        'csv_occurrence_count' => 'integer',
         'piece_price' => 'decimal:2',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',

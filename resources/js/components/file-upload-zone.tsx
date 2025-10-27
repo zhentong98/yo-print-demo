@@ -2,9 +2,10 @@ import { useRef, useState } from 'react';
 
 interface FileUploadZoneProps {
     onFilesSelected: (files: File[]) => void;
+    isUploading?: boolean;
 }
 
-export function FileUploadZone({ onFilesSelected }: FileUploadZoneProps) {
+export function FileUploadZone({ onFilesSelected, isUploading = false }: FileUploadZoneProps) {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [isDragging, setIsDragging] = useState(false);
 
@@ -36,7 +37,9 @@ export function FileUploadZone({ onFilesSelected }: FileUploadZoneProps) {
     };
 
     const handleClick = () => {
-        fileInputRef.current?.click();
+        if (!isUploading) {
+            fileInputRef.current?.click();
+        }
     };
 
     return (
@@ -85,9 +88,24 @@ export function FileUploadZone({ onFilesSelected }: FileUploadZoneProps) {
                 </div>
                 <button
                     type="button"
-                    className="px-8 py-3 bg-gray-900 text-white font-semibold rounded-xl hover:bg-gray-800 transition-all duration-200 shadow-lg hover:shadow-xl active:scale-95"
+                    disabled={isUploading}
+                    className={`px-8 py-3 font-semibold rounded-xl transition-all duration-200 shadow-lg ${
+                        isUploading
+                            ? 'bg-gray-400 cursor-not-allowed'
+                            : 'bg-gray-900 text-white hover:bg-gray-800 hover:shadow-xl active:scale-95'
+                    }`}
                 >
-                    Upload File
+                    {isUploading ? (
+                        <span className="flex items-center gap-2">
+                            <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Uploading...
+                        </span>
+                    ) : (
+                        'Upload File'
+                    )}
                 </button>
             </div>
             <input
