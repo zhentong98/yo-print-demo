@@ -30,3 +30,6 @@ yarn-error.log
 # Project exclude paths
 /storage/app/
 /storage/framework/
+/.claude/settings.local.json
+/.serena/.gitignore
+/.serena/project.yml
