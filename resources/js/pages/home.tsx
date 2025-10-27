@@ -7,6 +7,7 @@ export default function Home() {
     const [files, setFiles] = useState<UploadedFile[]>([]);
     const [isUploading, setIsUploading] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
+    const [isRefreshing, setIsRefreshing] = useState(false);
 
     // Load files from database on mount
     useEffect(() => {
@@ -14,8 +15,15 @@ export default function Home() {
     }, []);
 
     const loadFiles = async () => {
+        setIsRefreshing(true);
+
+        // Add minimum delay to show loading animation
+        const [response] = await Promise.all([
+            fetch('/api/file-uploads'),
+            new Promise(resolve => setTimeout(resolve, 500)) // Minimum 500ms delay
+        ]);
+
         try {
-            const response = await fetch('/api/file-uploads');
             const result = await response.json();
 
             if (result.success) {
@@ -39,6 +47,7 @@ export default function Home() {
             console.error('Failed to load files:', error);
         } finally {
             setIsLoading(false);
+            setIsRefreshing(false);
         }
     };
 
@@ -156,7 +165,7 @@ export default function Home() {
                     onFilesSelected={handleFilesSelected}
                     isUploading={isUploading}
                 />
-                <FileListTable files={files} onRefresh={loadFiles} />
+                <FileListTable files={files} onRefresh={loadFiles} isRefreshing={isRefreshing} />
             </div>
         </div>
     );
