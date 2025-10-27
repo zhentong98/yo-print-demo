@@ -96,19 +96,17 @@ export function FileListTable({ files, onRefresh, isRefreshing = false }: FileLi
                 <tr className="bg-gradient-to-r from-gray-50 to-gray-100 border-b-2 border-gray-200">
                     <th className="text-left px-8 py-5 font-bold text-gray-700">
                         <div className="flex items-center gap-2">
-                            Time
+                            File Name
                             <svg className="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
                                 <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
                             </svg>
                         </div>
                     </th>
                     <th className="text-left px-8 py-5 font-bold text-gray-700 border-l-2 border-gray-200">
-                        <div className="flex items-center gap-2">
-                            File Name
-                            <svg className="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
-                            </svg>
-                        </div>
+                        Created
+                    </th>
+                    <th className="text-left px-8 py-5 font-bold text-gray-700 border-l-2 border-gray-200">
+                        Last Modified
                     </th>
                     <th className="text-left px-8 py-5 font-bold text-gray-700 border-l-2 border-gray-200">
                         Status
@@ -118,7 +116,7 @@ export function FileListTable({ files, onRefresh, isRefreshing = false }: FileLi
                 <tbody>
                 {files.length === 0 ? (
                     <tr>
-                        <td colSpan={3} className="px-8 py-16 text-center">
+                        <td colSpan={4} className="px-8 py-16 text-center">
                             <div className="flex flex-col items-center gap-3">
                                 <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
                                     <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -140,19 +138,43 @@ export function FileListTable({ files, onRefresh, isRefreshing = false }: FileLi
                                 `}
                         >
                             <td className="px-8 py-5">
-                                <div className="flex items-center gap-2">
-                                    <svg className="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
-                                    </svg>
-                                    <span className="text-gray-600 text-sm font-medium">
-                                            {formatTime(file.uploadedAt)}
-                                        </span>
-                                </div>
-                            </td>
-                            <td className="px-8 py-5 border-l border-gray-100">
                                 <div className="flex items-center gap-3">
                                     {getFileIcon(file.name)}
                                     <span className="font-semibold text-gray-900">{file.name}</span>
+                                </div>
+                            </td>
+                            <td className="px-8 py-5 border-l border-gray-100">
+                                <div className="flex flex-col">
+                                    <span className="text-gray-600 text-sm font-medium">
+                                        {formatTime(file.uploadedAt)}
+                                    </span>
+                                    <span className="text-gray-400 text-xs mt-1">
+                                        {file.uploadedAt.toLocaleString('en-MY', {
+                                            year: 'numeric',
+                                            month: 'short',
+                                            day: 'numeric',
+                                            hour: '2-digit',
+                                            minute: '2-digit',
+                                            hour12: true
+                                        })}
+                                    </span>
+                                </div>
+                            </td>
+                            <td className="px-8 py-5 border-l border-gray-100">
+                                <div className="flex flex-col">
+                                    <span className="text-gray-600 text-sm font-medium">
+                                        {formatTime(file.updatedAt)}
+                                    </span>
+                                    <span className="text-gray-400 text-xs mt-1">
+                                        {file.updatedAt.toLocaleString('en-MY', {
+                                            year: 'numeric',
+                                            month: 'short',
+                                            day: 'numeric',
+                                            hour: '2-digit',
+                                            minute: '2-digit',
+                                            hour12: true
+                                        })}
+                                    </span>
                                 </div>
                             </td>
                             <td className="px-8 py-5 border-l border-gray-100">

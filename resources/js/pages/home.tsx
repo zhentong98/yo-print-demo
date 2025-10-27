@@ -31,6 +31,7 @@ export default function Home() {
                     id: item.id.toString(),
                     name: item.file_name,
                     uploadedAt: new Date(item.created_at),
+                    updatedAt: new Date(item.updated_at),
                     status: item.status as UploadedFile['status']
                 }));
 
@@ -72,15 +73,36 @@ export default function Home() {
                 const result = await response.json();
 
                 if (result.success) {
-                    // Add to UI with pending status
-                    const newFile: UploadedFile = {
-                        id: result.data.id.toString(),
-                        name: result.data.file_name,
-                        uploadedAt: new Date(result.data.created_at),
-                        status: result.data.status as UploadedFile['status']
-                    };
-
-                    setFiles((prev) => [newFile, ...prev]);
+                    const fileId = result.data.id.toString();
+                    
+                    // Check if file already exists in the list
+                    const existingFileIndex = files.findIndex(f => f.id === fileId);
+                    
+                    if (existingFileIndex >= 0) {
+                        // Update existing file status
+                        setFiles((prev) =>
+                            prev.map((f) =>
+                                f.id === fileId
+                                    ? {
+                                        ...f,
+                                        status: result.data.status as UploadedFile['status'],
+                                        uploadedAt: new Date(result.data.created_at),
+                                        updatedAt: new Date(),
+                                    }
+                                    : f
+                            )
+                        );
+                    } else {
+                        // Add new file to UI
+                        const newFile: UploadedFile = {
+                            id: fileId,
+                            name: result.data.file_name,
+                            uploadedAt: new Date(result.data.created_at),
+                            updatedAt: new Date(result.data.created_at),
+                            status: result.data.status as UploadedFile['status']
+                        };
+                        setFiles((prev) => [newFile, ...prev]);
+                    }
 
                     // Start polling for status updates
                     pollFileStatus(result.data.id);
@@ -112,7 +134,8 @@ export default function Home() {
                             f.id === fileId.toString()
                                 ? {
                                     ...f,
-                                    status: result.data.status as UploadedFile['status']
+                                    status: result.data.status as UploadedFile['status'],
+                                    updatedAt: new Date()
                                 }
                                 : f
                         )

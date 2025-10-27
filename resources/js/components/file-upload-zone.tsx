@@ -23,6 +23,8 @@ export function FileUploadZone({ onFilesSelected, isUploading = false }: FileUpl
         e.preventDefault();
         setIsDragging(false);
 
+        if (isUploading) return;
+
         const files = Array.from(e.dataTransfer.files);
         if (files.length > 0) {
             onFilesSelected(files);
@@ -30,9 +32,15 @@ export function FileUploadZone({ onFilesSelected, isUploading = false }: FileUpl
     };
 
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (isUploading) return;
+        
         const files = Array.from(e.target.files || []);
         if (files.length > 0) {
             onFilesSelected(files);
+            // Reset input so same file can be selected again
+            if (e.target) {
+                e.target.value = '';
+            }
         }
     };
 

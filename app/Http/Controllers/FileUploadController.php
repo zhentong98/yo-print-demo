@@ -30,6 +30,36 @@ class FileUploadController extends Controller
 
         try {
             $file = $request->file('file');
+            
+            // Calculate file hash for idempotency
+            $fileHash = hash_file('sha256', $file->getRealPath());
+            
+            // Check if this file was already uploaded
+            $existingUpload = FileUpload::where('file_hash', $fileHash)->first();
+            
+            if ($existingUpload) {
+                // File already exists, reprocess it
+                $existingUpload->update([
+                    'status' => 'pending',
+                    'error_message' => null,
+                    'processed_rows' => 0,
+                ]);
+                
+                // Dispatch job to reprocess
+                ProcessFileUpload::dispatch($existingUpload);
+                
+                return response()->json([
+                    'success' => true,
+                    'message' => 'File already exists, reprocessing...',
+                    'data' => [
+                        'id' => $existingUpload->id,
+                        'file_name' => $existingUpload->file_name,
+                        'status' => $existingUpload->status,
+                        'created_at' => $existingUpload->created_at,
+                    ],
+                ], 200);
+            }
+            
             $fileName = time() . '_' . $file->getClientOriginalName();
 
             // Store file in storage/app/uploads
@@ -38,6 +68,7 @@ class FileUploadController extends Controller
             // Create file upload record
             $fileUpload = FileUpload::create([
                 'file_name' => $file->getClientOriginalName(),
+                'file_hash' => $fileHash,
                 'file_path' => $filePath,
                 'status' => 'pending',
             ]);

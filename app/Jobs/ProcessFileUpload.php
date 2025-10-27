@@ -186,6 +186,15 @@ class ProcessFileUpload implements ShouldQueue
         }
     }
 
+    private function cleanUtf8(string $value): string
+    {
+        // Remove non-UTF-8 characters
+        $value = mb_convert_encoding($value, 'UTF-8', 'UTF-8');
+        // Remove any invalid UTF-8 sequences
+        $value = iconv('UTF-8', 'UTF-8//IGNORE', $value);
+        return trim($value);
+    }
+
     private function mapRowData(array $row): array
     {
         $uniqueKey = $row['UNIQUE_KEY'] ?? '';
@@ -193,14 +202,14 @@ class ProcessFileUpload implements ShouldQueue
 
         return [
             'file_upload_id' => $this->fileUpload->id,
-            'unique_key' => $uniqueKey,
+            'unique_key' => $this->cleanUtf8($uniqueKey),
             'csv_occurrence_count' => $occurrenceCount,
-            'product_title' => $row['PRODUCT_TITLE'] ?? '',
-            'product_description' => $row['PRODUCT_DESCRIPTION'] ?? null,
-            'style_number' => $row['STYLE#'] ?? null,
-            'sanmar_mainframe_color' => $row['SANMAR_MAINFRAME_COLOR'] ?? null,
-            'size' => $row['SIZE'] ?? null,
-            'color_name' => $row['COLOR_NAME'] ?? null,
+            'product_title' => $this->cleanUtf8($row['PRODUCT_TITLE'] ?? ''),
+            'product_description' => !empty($row['PRODUCT_DESCRIPTION']) ? $this->cleanUtf8($row['PRODUCT_DESCRIPTION']) : null,
+            'style_number' => !empty($row['STYLE#']) ? $this->cleanUtf8($row['STYLE#']) : null,
+            'sanmar_mainframe_color' => !empty($row['SANMAR_MAINFRAME_COLOR']) ? $this->cleanUtf8($row['SANMAR_MAINFRAME_COLOR']) : null,
+            'size' => !empty($row['SIZE']) ? $this->cleanUtf8($row['SIZE']) : null,
+            'color_name' => !empty($row['COLOR_NAME']) ? $this->cleanUtf8($row['COLOR_NAME']) : null,
             'piece_price' => !empty($row['PIECE_PRICE']) ? (float)$row['PIECE_PRICE'] : null,
             'created_at' => now(),
             'updated_at' => now(),
