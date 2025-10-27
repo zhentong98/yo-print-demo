@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ProductData extends Model
 {
@@ -16,7 +15,6 @@ class ProductData extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'file_upload_id',
         'unique_key',
         'csv_occurrence_count',
         'product_title',
@@ -39,12 +37,4 @@ class ProductData extends Model
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
-
-    /**
-     * Get the file upload that owns this product data.
-     */
-    public function fileUpload(): BelongsTo
-    {
-        return $this->belongsTo(FileUpload::class);
-    }
 }

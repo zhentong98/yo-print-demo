@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class FileUpload extends Model
 {
@@ -34,14 +33,6 @@ class FileUpload extends Model
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
-
-    /**
-     * Get the product data for this upload task.
-     */
-    public function productData(): HasMany
-    {
-        return $this->hasMany(ProductData::class);
-    }
 
     /**
      * Check if the task is completed.
@@ -76,6 +67,6 @@ class FileUpload extends Model
             return 0;
         }
 
-        return (int) round(($this->processed_rows / $this->total_rows) * 100);
+        return (int)round(($this->processed_rows / $this->total_rows) * 100);
     }
 }

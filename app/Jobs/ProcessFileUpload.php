@@ -63,7 +63,12 @@ class ProcessFileUpload implements ShouldQueue
                 throw new \Exception("Invalid CSV: no header found");
             }
 
-            $header = array_map(fn($h) => trim($h), $header);
+            // Clean header: remove BOM and trim whitespace
+            $header = array_map(function ($h) {
+                // Remove UTF-8 BOM if present
+                $h = str_replace("\xEF\xBB\xBF", '', $h);
+                return trim($h);
+            }, $header);
             Log::info("CSV header", ['columns' => $header]);
 
             // First pass: Count total rows and UNIQUE_KEY occurrences
@@ -201,7 +206,6 @@ class ProcessFileUpload implements ShouldQueue
         $occurrenceCount = $this->uniqueKeyCounts[$uniqueKey] ?? 1;
 
         return [
-            'file_upload_id' => $this->fileUpload->id,
             'unique_key' => $this->cleanUtf8($uniqueKey),
             'csv_occurrence_count' => $occurrenceCount,
             'product_title' => $this->cleanUtf8($row['PRODUCT_TITLE'] ?? ''),
@@ -224,7 +228,7 @@ class ProcessFileUpload implements ShouldQueue
             ['unique_key'], // Unique key to check
             ['product_title', 'product_description', 'style_number',
                 'sanmar_mainframe_color', 'size', 'color_name', 'piece_price',
-                'file_upload_id', 'csv_occurrence_count', 'updated_at'] // Columns to update if exists
+                'csv_occurrence_count', 'updated_at'] // All columns to update if exists
         );
     }
 
