@@ -19,6 +19,21 @@ export function FileUploadZone({ onFilesSelected, isUploading = false }: FileUpl
         setIsDragging(false);
     };
 
+    const isValidFileType = (file: File): boolean => {
+        const validExtensions = ['.csv', '.xlsx', '.xls'];
+        const validMimeTypes = [
+            'text/csv',
+            'application/vnd.ms-excel',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        ];
+        
+        const fileName = file.name.toLowerCase();
+        const hasValidExtension = validExtensions.some(ext => fileName.endsWith(ext));
+        const hasValidMimeType = validMimeTypes.includes(file.type);
+        
+        return hasValidExtension || hasValidMimeType;
+    };
+
     const handleDrop = (e: React.DragEvent) => {
         e.preventDefault();
         setIsDragging(false);
@@ -26,8 +41,19 @@ export function FileUploadZone({ onFilesSelected, isUploading = false }: FileUpl
         if (isUploading) return;
 
         const files = Array.from(e.dataTransfer.files);
-        if (files.length > 0) {
-            onFilesSelected(files);
+        const validFiles = files.filter(isValidFileType);
+        
+        if (validFiles.length === 0) {
+            alert('Please upload Excel files only (CSV, XLSX, XLS)');
+            return;
+        }
+        
+        if (validFiles.length < files.length) {
+            alert(`${files.length - validFiles.length} file(s) were skipped. Only Excel files are allowed.`);
+        }
+        
+        if (validFiles.length > 0) {
+            onFilesSelected(validFiles);
         }
     };
 
@@ -35,8 +61,23 @@ export function FileUploadZone({ onFilesSelected, isUploading = false }: FileUpl
         if (isUploading) return;
         
         const files = Array.from(e.target.files || []);
-        if (files.length > 0) {
-            onFilesSelected(files);
+        const validFiles = files.filter(isValidFileType);
+        
+        if (validFiles.length === 0) {
+            alert('Please upload Excel files only (CSV, XLSX, XLS)');
+            // Reset input
+            if (e.target) {
+                e.target.value = '';
+            }
+            return;
+        }
+        
+        if (validFiles.length < files.length) {
+            alert(`${files.length - validFiles.length} file(s) were skipped. Only Excel files are allowed.`);
+        }
+        
+        if (validFiles.length > 0) {
+            onFilesSelected(validFiles);
             // Reset input so same file can be selected again
             if (e.target) {
                 e.target.value = '';
@@ -90,7 +131,7 @@ export function FileUploadZone({ onFilesSelected, isUploading = false }: FileUpl
                             {isDragging ? 'Drop your files here' : 'Select file / Drag and drop'}
                         </p>
                         <p className="text-gray-500 text-sm">
-                            Support for multiple files • Max 100MB per file
+                            Excel files only (CSV, XLSX, XLS) • Max 100MB per file
                         </p>
                     </div>
                 </div>
@@ -120,6 +161,7 @@ export function FileUploadZone({ onFilesSelected, isUploading = false }: FileUpl
                 ref={fileInputRef}
                 type="file"
                 multiple
+                accept=".csv,.xlsx,.xls,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv"
                 onChange={handleFileSelect}
                 className="hidden"
             />

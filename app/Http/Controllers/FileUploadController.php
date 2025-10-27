@@ -17,7 +17,7 @@ class FileUploadController extends Controller
     public function upload(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'file' => 'required|file|mimes:csv,txt|max:102400', // Max 100MB
+            'file' => 'required|file|mimes:csv,xlsx,xls|max:102400', // Max 100MB, Excel files only
         ]);
 
         if ($validator->fails()) {

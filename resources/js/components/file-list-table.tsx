@@ -103,13 +103,13 @@ export function FileListTable({ files, onRefresh, isRefreshing = false }: FileLi
                         </div>
                     </th>
                     <th className="text-left px-8 py-5 font-bold text-gray-700 border-l-2 border-gray-200">
-                        Created
+                        Status
                     </th>
                     <th className="text-left px-8 py-5 font-bold text-gray-700 border-l-2 border-gray-200">
                         Last Modified
                     </th>
                     <th className="text-left px-8 py-5 font-bold text-gray-700 border-l-2 border-gray-200">
-                        Status
+                        Created
                     </th>
                 </tr>
                 </thead>
@@ -144,21 +144,7 @@ export function FileListTable({ files, onRefresh, isRefreshing = false }: FileLi
                                 </div>
                             </td>
                             <td className="px-8 py-5 border-l border-gray-100">
-                                <div className="flex flex-col">
-                                    <span className="text-gray-600 text-sm font-medium">
-                                        {formatTime(file.uploadedAt)}
-                                    </span>
-                                    <span className="text-gray-400 text-xs mt-1">
-                                        {file.uploadedAt.toLocaleString('en-MY', {
-                                            year: 'numeric',
-                                            month: 'short',
-                                            day: 'numeric',
-                                            hour: '2-digit',
-                                            minute: '2-digit',
-                                            hour12: true
-                                        })}
-                                    </span>
-                                </div>
+                                {getStatusBadge(file.status)}
                             </td>
                             <td className="px-8 py-5 border-l border-gray-100">
                                 <div className="flex flex-col">
@@ -178,7 +164,21 @@ export function FileListTable({ files, onRefresh, isRefreshing = false }: FileLi
                                 </div>
                             </td>
                             <td className="px-8 py-5 border-l border-gray-100">
-                                {getStatusBadge(file.status)}
+                                <div className="flex flex-col">
+                                    <span className="text-gray-600 text-sm font-medium">
+                                        {formatTime(file.uploadedAt)}
+                                    </span>
+                                    <span className="text-gray-400 text-xs mt-1">
+                                        {file.uploadedAt.toLocaleString('en-MY', {
+                                            year: 'numeric',
+                                            month: 'short',
+                                            day: 'numeric',
+                                            hour: '2-digit',
+                                            minute: '2-digit',
+                                            hour12: true
+                                        })}
+                                    </span>
+                                </div>
                             </td>
                         </tr>
                     ))
