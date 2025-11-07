@@ -33,3 +33,4 @@ yarn-error.log
 /.claude/settings.local.json
 /.serena/.gitignore
 /.serena/project.yml
+/sample/*
